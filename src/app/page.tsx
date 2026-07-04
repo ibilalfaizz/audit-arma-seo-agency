@@ -29,21 +29,6 @@ export default function Home() {
     }
   }, []);
 
-  const handleDemoRefChange = (value: string) => {
-    setActiveRef(value);
-    
-    // Optional: update URL query parameter for realistic simulation
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      if (value) {
-        url.searchParams.set("ref", value);
-      } else {
-        url.searchParams.delete("ref");
-      }
-      window.history.replaceState({}, "", url.toString());
-    }
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setResult(null);
@@ -162,7 +147,7 @@ export default function Home() {
                     <input type="hidden" name="ref" value={activeRef} />
                     
                     <div className="field">
-                      <label className="f-reflabel" htmlFor="website">Your business website</label>
+                      <label htmlFor="website">Your business website</label>
                       <input
                         id="website"
                         name="website"
@@ -315,23 +300,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* demo control */}
-      <div className="demo">
-        <div className="dh">
-          <span className="d"></span> Preview &middot; simulate partner link
-        </div>
-        <select id="demoRef" value={activeRef} onChange={(e) => handleDemoRefChange(e.target.value)}>
-          <option value="">No ref &mdash; direct visitor</option>
-          <option value="miller">?ref=miller &mdash; Miller Digital</option>
-          <option value="brightseo">?ref=brightseo &mdash; Bright SEO Co.</option>
-          <option value="apexcrm">?ref=apexcrm &mdash; Apex CRM Consulting</option>
-        </select>
-        <div className="du">
-          <span className="g">arma.com/audit</span>
-          <span id="duRef">{activeRef ? `?ref=${activeRef}` : ""}</span>
-        </div>
-      </div>
     </>
   );
 }
