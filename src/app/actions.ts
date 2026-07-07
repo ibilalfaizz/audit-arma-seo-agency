@@ -57,7 +57,7 @@ export async function submitAudit(prevState: any, formData: FormData): Promise<S
     `📊 <b>New Free Local Growth Audit Request</b>\n`,
     `🌐 <b>Website:</b> <a href="${websiteLink}">${safeWebsite}</a>`,
     `📧 <b>Email:</b> <code>${safeEmail}</code>`,
-    `🔗 <b>Referrer (URL Param):</b> ${safeRef ? `<code>${safeRef}</code>` : "<i>None (Direct)</i>"}`,
+    ...(safeRef ? [`🔗 <b>Referrer (URL Param):</b> <code>${safeRef}</code>`] : []),
     `✍️ <b>Referrer (Typed):</b> ${safeReferrerTyped ? `<code>${safeReferrerTyped}</code>` : "<i>None</i>"}`,
     `📅 <b>Submitted At:</b> <code>${new Date().toISOString()}</code>`
   ].join("\n");
