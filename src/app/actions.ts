@@ -18,8 +18,8 @@ export async function submitAudit(prevState: any, formData: FormData): Promise<S
   const referrer_typed = formData.get("referrer_typed")?.toString().trim() || null;
 
   // Validate inputs
-  if (!website || !email) {
-    return { success: false, message: "Website and email are required fields." };
+  if (!website || !email || !referrer_typed) {
+    return { success: false, message: "Website, email, and referrer are required fields." };
   }
 
   // Telegram credentials from environment variables
@@ -58,7 +58,7 @@ export async function submitAudit(prevState: any, formData: FormData): Promise<S
     `🌐 <b>Website:</b> <a href="${websiteLink}">${safeWebsite}</a>`,
     `📧 <b>Email:</b> <code>${safeEmail}</code>`,
     ...(safeRef ? [`🔗 <b>Referrer (URL Param):</b> <code>${safeRef}</code>`] : []),
-    `✍️ <b>Referrer (Typed):</b> ${safeReferrerTyped ? `<code>${safeReferrerTyped}</code>` : "<i>None</i>"}`,
+    `✍️ <b>Referrer (Typed):</b> <code>${safeReferrerTyped}</code>`,
     `📅 <b>Submitted At:</b> <code>${new Date().toISOString()}</code>`
   ].join("\n");
 

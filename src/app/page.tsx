@@ -170,9 +170,11 @@ export default function Home() {
                         className={`f-referrer ${activeRef ? "locked" : ""}`}
                         type="text"
                         placeholder="Company or person who sent you"
+                        required
+                        readOnly={!!activeRef}
                         value={referrerDisplayValue}
                         onChange={(e) => setTypedReferrer(e.target.value)}
-                        disabled={!!activeRef || isPending}
+                        disabled={isPending}
                       />
                     </div>
                     
