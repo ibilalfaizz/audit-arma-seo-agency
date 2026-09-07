@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import Image from "next/image";
 import { submitAudit, SubmitState } from "./actions";
 
 const PARTNERS: Record<string, string> = {
@@ -13,8 +14,10 @@ export default function Home() {
   const [activeRef, setActiveRef] = useState<string>("");
   const [typedReferrer, setTypedReferrer] = useState<string>("");
   const [website, setWebsite] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [area, setArea] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  
+
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<SubmitState | null>(null);
 
@@ -29,279 +32,271 @@ export default function Home() {
     }
   }, []);
 
+  const knownPartnerName = activeRef ? PARTNERS[activeRef.toLowerCase()] : undefined;
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setResult(null);
 
     const formData = new FormData(event.currentTarget);
-    
+
     startTransition(async () => {
       const response = await submitAudit(null, formData);
       setResult(response);
     });
   };
 
-  const handleReset = () => {
-    setResult(null);
-    setWebsite("");
-    setEmail("");
-    setTypedReferrer("");
-    setActiveRef("");
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("ref");
-      window.history.replaceState({}, "", url.pathname);
-    }
-  };
-
-  const referrerDisplayValue = activeRef ? (PARTNERS[activeRef] || activeRef) : typedReferrer;
-
   return (
     <>
-      <div className="topbar">
-        <div className="brand">
-          <div className="mark">A</div>
-          <div className="name">ARMA<em>.</em></div>
-        </div>
-        <div className="tr">
-          <span className="g"></span> Live local data · updated in real time
+      <div className="top">
+        <div className="wrap">
+          <div className="brand">
+            <Image src="/logo.png" alt="ARMA" width={526} height={120} priority />
+          </div>
+          <div className="tr">Built for home-service contractors</div>
         </div>
       </div>
 
-      {/* ===== HERO : pitch left / form right (balanced) ===== */}
-      <section className="hero">
-        <div className="hero-in">
-          <div className="left">
-            <div className="eyebrow">
-              <span className="tick"></span> Free Local Growth Audit
-            </div>
+      <div className="hero">
+        <div className="wrap hgrid">
+          <div>
+            <div className="eyebrow">Free market report</div>
+            {knownPartnerName && (
+              <div className="refbadge">
+                <span className="dot"></span>
+                <span>
+                  Requested by <b>{knownPartnerName}</b>
+                </span>
+              </div>
+            )}
             <h1>
-              See who's taking your <span className="r">calls.</span>
+              See who&apos;s taking your <span className="r">calls.</span>
             </h1>
             <p className="lede">
-              A 6-page breakdown of your website, your local ranking, and the competitors booking the jobs that should be yours — the kind of audit agencies charge <b>$1,485</b> for. Built from your real data, in 24 hours.
+              We pull the real numbers for your area — how many people search for what you do, who&apos;s paying Google to reach them, and where you show up. Then <b>we get on a call and walk you through it,</b>{" "}
+              so you&apos;re not left staring at a page of figures. The document is yours to keep either way.
             </p>
-            <div className="why">
-              <div className="q">What's the catch?</div>
-              <p>
-                About 1 in 5 businesses we audit hire us to fix what we find. We'd rather show you real value than cold-pitch you — the report's yours either way, no strings.
-              </p>
-            </div>
-            <div className="meta">
-              <span><b>6-page</b> report</span>
-              <span><b>24h</b> turnaround</span>
-              <span><b>No call</b> needed</span>
+            <div className="metarow">
+              <div>
+                <b>Your area</b>Not a generic report
+              </div>
+              <div>
+                <b>Built by hand</b>Not auto-generated
+              </div>
+              <div>
+                <b>$0</b>No obligation, ever
+              </div>
             </div>
           </div>
 
-          <div className="formcol">
-            <div className="card" id="card">
-              {result && result.success ? (
+          <div>
+            {result && result.success ? (
+              <div className="card">
                 <div className="done">
-                  <div className="ok">
-                    <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6 9 17l-5-5"/>
-                    </svg>
-                    <span>You're all set</span>
-                  </div>
+                  <h4>Got it.</h4>
                   <p>
-                    Your audit for <b>{result.data?.website}</b> is being prepared &mdash; it'll reach {result.data?.email} within 24 hours.
+                    We&apos;ll call within one business day to set a time. Your report gets built for that call — with your zip codes, your competitors, your numbers.
                   </p>
-                  <div className="pl">
-                    <div><span className="k">site:  </span>&quot;{result.data?.website}&quot;</div>
-                    {result.data?.ref ? (
-                      <div>
-                        <span className="k">ref:   </span>
-                        <span className="rf">&quot;{result.data?.ref}&quot;</span>
-                      </div>
-                    ) : (
-                      <div><span className="k">ref:   </span>null</div>
-                    )}
-                    {result.data?.referrer_typed && (
-                      <div>
-                        <span className="k">typed: </span>
-                        &quot;{result.data?.referrer_typed}&quot;
-                      </div>
-                    )}
-                    <span className="cap">
-                      &uarr; The record that lands in your intake sheet. <b>ref</b> tells you which partner to pay &mdash; captured from the link automatically.
-                    </span>
-                  </div>
-                  <button className="again" onClick={handleReset}>
-                    &larr; Reset demo
-                  </button>
                 </div>
-              ) : (
-                <>
-                  <h2>Claim your audit</h2>
-                  <p className="cs">Enter your site — we build the report from your real numbers.</p>
-                  
-                  <form className="af" onSubmit={handleSubmit}>
-                    {activeRef && (
-                      <div className="f-ptag" id="ptag">
-                        <span className="dot"></span>
-                        <span>Referred by <b className="f-pname">{PARTNERS[activeRef] || activeRef}</b></span>
-                      </div>
-                    )}
+              </div>
+            ) : (
+              <div className="card">
+                <h2>Claim your market report</h2>
+                <p className="cs">Takes about 30 seconds. We&apos;ll call to set a time.</p>
 
-                    <input type="hidden" name="ref" value={activeRef} />
-                    
-                    <div className="field">
-                      <label htmlFor="website">Your business website</label>
-                      <input
-                        id="website"
-                        name="website"
-                        className="f-website"
-                        type="text"
-                        placeholder="yourcompany.com"
-                        required
-                        autoComplete="url"
-                        value={website}
-                        onChange={(e) => setWebsite(e.target.value)}
-                        disabled={isPending}
-                      />
-                    </div>
-                    
+                <form onSubmit={handleSubmit}>
+                  <input type="hidden" name="ref" value={activeRef} />
+
+                  <div className="field">
+                    <label htmlFor="website">Your business website</label>
+                    <input
+                      id="website"
+                      name="website"
+                      type="text"
+                      placeholder="yourcompany.com"
+                      required
+                      autoComplete="url"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      disabled={isPending}
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="phone">Best phone number</label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="(512) 555-0134"
+                      required
+                      autoComplete="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      disabled={isPending}
+                    />
+                    <div className="hint">So we can set a time that works — we don&apos;t cold-call after that.</div>
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="area">Areas you serve</label>
+                    <input
+                      id="area"
+                      name="area"
+                      type="text"
+                      placeholder="City, or the zip codes you cover"
+                      required
+                      value={area}
+                      onChange={(e) => setArea(e.target.value)}
+                      disabled={isPending}
+                    />
+                    <div className="hint">The more exact, the more exact your report. Zip codes are ideal.</div>
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="email">Where do we send the report?</label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@yourcompany.com"
+                      required
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={isPending}
+                    />
+                  </div>
+
+                  {knownPartnerName ? (
+                    <input type="hidden" name="referrer_typed" value={knownPartnerName} />
+                  ) : (
                     <div className="field">
                       <label htmlFor="referrer">Who referred you?</label>
                       <input
                         id="referrer"
                         name="referrer_typed"
-                        className={`f-referrer ${activeRef ? "locked" : ""}`}
                         type="text"
                         placeholder="Company or person who sent you"
                         required
-                        readOnly={!!activeRef}
-                        value={referrerDisplayValue}
+                        value={typedReferrer}
                         onChange={(e) => setTypedReferrer(e.target.value)}
                         disabled={isPending}
                       />
                     </div>
-                    
-                    <div className="field">
-                      <label htmlFor="email">Where do we send the report?</label>
-                      <input
-                        id="email"
-                        name="email"
-                        className="f-email"
-                        type="email"
-                        placeholder="you@yourcompany.com"
-                        required
-                        autoComplete="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={isPending}
-                      />
-                    </div>
-                    
-                    <button className="submit" type="submit" disabled={isPending}>
-                      {isPending ? "Sending..." : "Send my free audit"} <span className="arw">&rarr;</span>
-                    </button>
-                    
-                    {result && !result.success && (
-                      <div className="error-message">
-                        {result.message}
-                      </div>
-                    )}
+                  )}
 
-                    <p className="trust">No spam &middot; No obligation &middot; No call required</p>
-                  </form>
-                </>
-              )}
+                  <button className="submit" type="submit" disabled={isPending}>
+                    {isPending ? "Sending..." : "Book my walkthrough"} &nbsp;&rarr;
+                  </button>
+
+                  {result && !result.success && <div className="error-message">{result.message}</div>}
+
+                  <p className="trust">No spam &middot; No obligation &middot; Yours to keep</p>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <section>
+        <div className="wrap">
+          <div className="k">How it works</div>
+          <h3>Three steps. One of them is yours.</h3>
+          <div className="steps">
+            <div className="step">
+              <div className="n">01</div>
+              <h4>You tell us where you work</h4>
+              <p>Website, phone, email, and the areas you cover. Thirty seconds — and that&apos;s the last thing we need from you.</p>
             </div>
-            
-            <div className="next">
-              <div className="s">
-                <div className="n">1</div>
-                <div className="t">Enter your site &mdash; 20 seconds</div>
+            <div className="step">
+              <div className="n">02</div>
+              <h4>We build the report for your market</h4>
+              <p>Your zip codes, your searches, your actual competitors — pulled from public Google data. Built by hand, not generated.</p>
+            </div>
+            <div className="step">
+              <div className="n">03</div>
+              <h4>We go through it with you</h4>
+              <p>We walk you through what every number means and what we&apos;d do about it first. Then the document is yours, whatever you decide.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="inside">
+        <div className="wrap">
+          <div className="k">What&apos;s in it</div>
+          <h3>Six things about your business you can&apos;t see from the inside.</h3>
+          <p className="sublede">All of it from public Google data, so you can check every figure yourself.</p>
+          <div className="ilist">
+            <div className="item">
+              <span className="ck">&#10003;</span>
+              <div>
+                <b>How many people search for what you do</b>
+                <span>Every month, in your zip codes — with the exact search terms</span>
               </div>
-              <div className="s">
-                <div className="n">2</div>
-                <div className="t">We benchmark you vs local competitors</div>
+            </div>
+            <div className="item">
+              <span className="ck">&#10003;</span>
+              <div>
+                <b>Who&apos;s paying Google to reach them right now</b>
+                <span>Named competitors, and how long they&apos;ve been advertising</span>
               </div>
-              <div className="s">
-                <div className="n">3</div>
-                <div className="t">Report in your inbox within 24h</div>
+            </div>
+            <div className="item">
+              <span className="ck">&#10003;</span>
+              <div>
+                <b>What shows up when someone searches your company</b>
+                <span>Often a competitor&apos;s ad sits above your own name</span>
+              </div>
+            </div>
+            <div className="item">
+              <span className="ck">&#10003;</span>
+              <div>
+                <b>Where you appear — and where you don&apos;t</b>
+                <span>Paid results, Local Services Ads, and map listings</span>
+              </div>
+            </div>
+            <div className="item">
+              <span className="ck">&#10003;</span>
+              <div>
+                <b>Whether your site would hold up under more traffic</b>
+                <span>Speed on a phone, how easy it is to call you, what you&apos;re not tracking</span>
+              </div>
+            </div>
+            <div className="item">
+              <span className="ck">&#10003;</span>
+              <div>
+                <b>The one thing costing you the most — and what to do first</b>
+                <span>Three moves in priority order. Not a list of twenty problems</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== BREAKDOWN BAND (full width) ===== */}
-      <section className="band">
-        <div className="band-in">
-          <div className="band-lead">
-            <div className="k">What's inside &mdash; and what it's worth</div>
-            <h3>
-              A <span className="r">$1,485</span> audit. Yours free.
-            </h3>
-          </div>
-          <div className="stack">
-            <div className="stack-h">
-              <span>Here's everything you get</span>
-              <span>Agency price</span>
-            </div>
-            <div className="sl">
-              <div className="txt">
-                <span className="ck">&#10003;</span>
-                <span className="nm">
-                  Local ranking report
-                  <small>Where you rank against nearby competitors</small>
-                </span>
-              </div>
-              <span className="pr">$385</span>
-            </div>
-            <div className="sl">
-              <div className="txt">
-                <span className="ck">&#10003;</span>
-                <span className="nm">
-                  Profile + reviews audit
-                  <small>The trust gaps losing you clicks</small>
-                </span>
-              </div>
-              <span className="pr">$295</span>
-            </div>
-            <div className="sl">
-              <div className="txt">
-                <span className="ck">&#10003;</span>
-                <span className="nm">
-                  Speed + booking analysis
-                  <small>Where visitors leave before calling</small>
-                </span>
-              </div>
-              <span className="pr">$325</span>
-            </div>
-            <div className="sl">
-              <div className="txt">
-                <span className="ck">&#10003;</span>
-                <span className="nm">
-                  Competitor breakdown
-                  <small>Who's ahead of you locally, and why</small>
-                </span>
-              </div>
-              <span className="pr">$280</span>
-            </div>
-            <div className="sl">
-              <div className="txt">
-                <span className="ck">&#10003;</span>
-                <span className="nm">
-                  Priority action plan
-                  <small>Exactly what to fix first</small>
-                </span>
-              </div>
-              <span className="pr">$200</span>
-            </div>
-            <div className="total">
-              <span className="lb">Total value</span>
-              <span className="rt">
-                <span className="was">$1,485</span>
-                <span className="now">Free</span>
-              </span>
+      <section className="catch">
+        <div className="wrap">
+          <div className="k">The obvious question</div>
+          <h3>So what&apos;s the catch?</h3>
+          <div className="cgrid one">
+            <div>
+              <p>There isn&apos;t one, but there&apos;s a reason. We work with contractors — that&apos;s all we do. Some of the people we build these for end up hiring us, and that&apos;s why it&apos;s worth our time to do them properly.</p>
+              <p>
+                <b>The rest don&apos;t, and they keep the report.</b>{" "}
+                We&apos;d rather show you something real than cold-pitch you on a call you didn&apos;t ask for.
+              </p>
             </div>
           </div>
         </div>
       </section>
+
+      <footer>
+        <div className="wrap">
+          <span>ARMA Agency &middot; Chicago, IL</span>
+        </div>
+      </footer>
     </>
   );
 }

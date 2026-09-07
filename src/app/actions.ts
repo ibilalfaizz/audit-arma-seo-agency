@@ -5,6 +5,8 @@ export interface SubmitState {
   message?: string;
   data?: {
     website: string;
+    phone: string;
+    area: string;
     email: string;
     ref: string | null;
     referrer_typed: string | null;
@@ -13,13 +15,15 @@ export interface SubmitState {
 
 export async function submitAudit(prevState: any, formData: FormData): Promise<SubmitState> {
   const website = formData.get("website")?.toString().trim();
+  const phone = formData.get("phone")?.toString().trim();
+  const area = formData.get("area")?.toString().trim();
   const email = formData.get("email")?.toString().trim();
   const ref = formData.get("ref")?.toString().trim() || null;
   const referrer_typed = formData.get("referrer_typed")?.toString().trim() || null;
 
   // Validate inputs
-  if (!website || !email || !referrer_typed) {
-    return { success: false, message: "Website, email, and referrer are required fields." };
+  if (!website || !phone || !area || !email || !referrer_typed) {
+    return { success: false, message: "Website, phone, service area, email, and referrer are required fields." };
   }
 
   // Telegram credentials from environment variables
@@ -44,18 +48,22 @@ export async function submitAudit(prevState: any, formData: FormData): Promise<S
   };
 
   const safeWebsite = escapeHTML(website);
+  const safePhone = escapeHTML(phone);
+  const safeArea = escapeHTML(area);
   const safeEmail = escapeHTML(email);
   const safeRef = ref ? escapeHTML(ref) : null;
   const safeReferrerTyped = referrer_typed ? escapeHTML(referrer_typed) : null;
 
   // Make sure the link has a protocol
-  const websiteLink = safeWebsite.startsWith("http://") || safeWebsite.startsWith("https://") 
-    ? safeWebsite 
+  const websiteLink = safeWebsite.startsWith("http://") || safeWebsite.startsWith("https://")
+    ? safeWebsite
     : `https://${safeWebsite}`;
 
   const messageText = [
-    `📊 <b>New Free Local Growth Audit Request</b>\n`,
+    `📊 <b>New Free Market Report Request</b>\n`,
     `🌐 <b>Website:</b> <a href="${websiteLink}">${safeWebsite}</a>`,
+    `📞 <b>Phone:</b> <code>${safePhone}</code>`,
+    `📍 <b>Service Area:</b> ${safeArea}`,
     `📧 <b>Email:</b> <code>${safeEmail}</code>`,
     ...(safeRef ? [`🔗 <b>Referrer (URL Param):</b> <code>${safeRef}</code>`] : []),
     `✍️ <b>Referrer (Typed):</b> <code>${safeReferrerTyped}</code>`,
@@ -85,10 +93,12 @@ export async function submitAudit(prevState: any, formData: FormData): Promise<S
       };
     }
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       data: {
         website,
+        phone,
+        area,
         email,
         ref,
         referrer_typed,

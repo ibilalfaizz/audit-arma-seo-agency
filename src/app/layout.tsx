@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { Anton, Inter, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-
-const anton = Anton({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-anton",
-});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,8 +14,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ARMA — Free Local Growth Audit",
-  description: "See who's taking your calls. A 6-page breakdown of your website, your local ranking, and the competitors booking the jobs that should be yours.",
+  title: "ARMA — Free Market Report",
+  description: "See who's taking your calls. We pull the real numbers for your area — how many people search for what you do, who's paying Google to reach them, and where you show up.",
 };
 
 export default function RootLayout({
@@ -30,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${anton.variable} ${inter.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable}`}>
       <body>{children}</body>
     </html>
   );
