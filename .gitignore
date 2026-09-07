@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# runtime data — created/edited by the admin UI on the server, never checked in
+# (data/partners.seed.json is the tracked bootstrap default; this is the live file)
+/data/partners.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
