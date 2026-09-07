@@ -3,12 +3,9 @@
 import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import { submitAudit, SubmitState } from "./actions";
+import PARTNERS from "@/data/partners.json";
 
-const PARTNERS: Record<string, string> = {
-  miller: "Miller Digital",
-  brightseo: "Bright SEO Co.",
-  apexcrm: "Apex CRM Consulting",
-};
+const REF_STORAGE_KEY = "arma_ref_slug";
 
 export default function Home() {
   const [activeRef, setActiveRef] = useState<string>("");
@@ -21,18 +18,27 @@ export default function Home() {
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<SubmitState | null>(null);
 
-  // Read ref from URL search query on mount
+  // ref comes from the URL on a referral visit; on a later direct visit we fall
+  // back to the slug saved in localStorage so attribution survives, per partner.
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const refParam = params.get("ref") || "";
-      if (refParam) {
-        setActiveRef(refParam);
-      }
+    if (typeof window === "undefined") return;
+    const refParam = new URLSearchParams(window.location.search).get("ref");
+
+    if (refParam) {
+      setActiveRef(refParam);
+      try {
+        window.localStorage.setItem(REF_STORAGE_KEY, refParam);
+      } catch {}
+      return;
     }
+
+    try {
+      const stored = window.localStorage.getItem(REF_STORAGE_KEY);
+      if (stored) setActiveRef(stored);
+    } catch {}
   }, []);
 
-  const knownPartnerName = activeRef ? PARTNERS[activeRef.toLowerCase()] : undefined;
+  const knownPartnerName = activeRef ? (PARTNERS as Record<string, string>)[activeRef.toLowerCase()] : undefined;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,7 +59,6 @@ export default function Home() {
           <div className="brand">
             <Image src="/logo.png" alt="ARMA" width={526} height={120} priority />
           </div>
-          <div className="tr">Built for home-service contractors</div>
         </div>
       </div>
 
@@ -294,7 +299,7 @@ export default function Home() {
 
       <footer>
         <div className="wrap">
-          <span>ARMA Agency &middot; Chicago, IL</span>
+          <Image src="/logo.png" alt="ARMA" width={526} height={120} />
         </div>
       </footer>
     </>

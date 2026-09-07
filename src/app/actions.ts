@@ -63,7 +63,7 @@ export async function submitAudit(prevState: any, formData: FormData): Promise<S
     `📊 <b>New Free Market Report Request</b>\n`,
     `🌐 <b>Website:</b> <a href="${websiteLink}">${safeWebsite}</a>`,
     `📞 <b>Phone:</b> <code>${safePhone}</code>`,
-    `📍 <b>Service Area:</b> ${safeArea}`,
+    `📍 <b>Areas Served:</b> ${safeArea}`,
     `📧 <b>Email:</b> <code>${safeEmail}</code>`,
     ...(safeRef ? [`🔗 <b>Referrer (URL Param):</b> <code>${safeRef}</code>`] : []),
     `✍️ <b>Referrer (Typed):</b> <code>${safeReferrerTyped}</code>`,

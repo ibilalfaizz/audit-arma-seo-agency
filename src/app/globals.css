@@ -55,13 +55,6 @@ body {
   display: block;
 }
 
-.tr {
-  font-family: var(--font-ibm-plex-mono), monospace;
-  font-size: 11px;
-  color: #8E8E97;
-  letter-spacing: 0.04em;
-}
-
 footer img {
   height: 18px;
   width: auto;
